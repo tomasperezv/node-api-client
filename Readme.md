@@ -11,7 +11,12 @@ http://www.tomasperez.com
 Examples
 ----------
 
-	// Twitter search API
+	// API available types
+	ApiClient.Types.TWITTER_SEARCH
+	ApiClient.Types.TWITTER_STREAM
+	ApiClient.Types.GOOGLE_PREDICTION
+
+	// Example of request to the Twitter Search API
 	var twitterSearchClient = ApiClientFactory.get(ApiClient.types.TWITTER_SEARCH);
 	twitterSearchClient.search({maxTweets: 2, filters: 'test node'}, function(result) {
 		// Succesful request
