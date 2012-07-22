@@ -48,18 +48,29 @@ TwitterStreamClient.prototype._getNTwitter = function() {
 TwitterStreamClient.prototype.search = function(filters, callback) {
 	var params = {
 		track: this._formatFilters(filters)
+		locations: '-180,-90,180,90'
 	};
 	console.log(params);
 	var nTwitter = this._getNTwitter(),
 		self = this;
 
 	nTwitter.stream('statuses/filter', params, function(stream) {
-		stream.on('data', callback);
+		var output = [];
 
-		stream.on('destroy', function (response) {
+		stream.on('data', function (chunk) {
+			console.log(chunk.text);
+			output.push(chunk);
 		});
 
-		// Disconnect stream after max time 
+		stream.on('destroy', function (response) {
+			console.log('Returning ' + output.length + ' results');
+			callback(JSON.stringify(output));
+		});
+
+		stream.on('error', function (response) {
+		});
+
+		// Disconnect stream after max time
 		setTimeout(stream.destroy, self.config['twitter-stream-time']);
 	});
 
