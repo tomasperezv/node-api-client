@@ -23,6 +23,20 @@ Examples
 		console.log(result);
 	});
 
+	// Example of request to the Twitter Stream API
+	var config = {
+		"twitter-consumer-key" : "",
+		"twitter-consumer-secret": "",
+		"twitter-access-token": "",
+		"twitter-access-token-secret": "",
+		"twitter-stream-time": 10000 // Time while the stream will be open
+	};
+
+	var twitterStreamClient = ApiClientFactory.get(ApiClientTypes.TWITTER_STREAM, config);
+	twitterStreamClient.search({filters: 'test node'}, function(result) {
+		console.log(result.text);
+	});
+
 License
 -----------
 Public Domain.

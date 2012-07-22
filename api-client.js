@@ -57,6 +57,8 @@ var ApiClientFactory = {
 				apiClient = new TwitterSearchClient(config);
 				break;
 			case Types.TWITTER_STREAM:
+				var TwitterStreamClient = require('./twitter-stream-client').TwitterStreamClient;
+				apiClient = new TwitterStreamClient(config);
 				break;
 		}
 		return apiClient;

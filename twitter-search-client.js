@@ -9,30 +9,22 @@
  * No warranty expressed or implied. Use at your own risk.
  */
 var HttpApiClient = require('./http-api-client').HttpApiClient,
-	querystring = require('querystring');
+	querystring = require('querystring'),
+	TwitterClient = require('./twitter-client').TwitterClient;
 
 var TwitterSearchClient = function() {
 	var config = {
 		port: 80,
 		host: 'search.twitter.com'
 	};
+	this.TYPE_AND = ' AND ';
+	this.TYPE_OR = ' OR ';
 	HttpApiClient.call(this, config);
-	/**
-	 * Used to compose the filters query string
-	 */
-	this.AND = ' AND ';
-	this.OR = ' OR ';
 }
 
 TwitterSearchClient.prototype = new HttpApiClient();
 
-/**
- * @param {Object} filters
- * @return {String} filters urlencoded
- */
-TwitterSearchClient.prototype._formatFilters = function(filters) {
-	return querystring.stringify({'q': filters['data'].join(filters['type'])});
-};
+TwitterSearchClient.prototype._formatFilters = TwitterClient.prototype._formatFilters;
 
 /**
  * Build the path expected by the HttpApiClient to build the request.
@@ -40,19 +32,11 @@ TwitterSearchClient.prototype._formatFilters = function(filters) {
  * @return {String}
  */
 TwitterSearchClient.prototype._buildPath = function(params) {
-	var type = this.AND;
-	if (params.type_and == 'false') {
-		type = this.OR;
-	}
-	var filters = {
-		'data': params.filters.split(' '),
-		'type': type
-	};
-
 	if (typeof params.page === 'undefined') {
 		params.page = 1;
 	}
-	return '/search.json?' + this._formatFilters(filters) + '&rpp=' + params.maxTweets + '&page=' + params.page;
+	var query = querystring.stringify({'q': this._formatFilters(params)});
+	return '/search.json?q=' + query + '&rpp=' + params.maxTweets + '&page=' + params.page;
 };
 
 /**
