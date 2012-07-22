@@ -11,7 +11,11 @@
 var HttpApiClient = require('./http-api-client').HttpApiClient,
 	querystring = require('querystring');
 
-var TwitterSearchClient = function(config) {
+var TwitterSearchClient = function() {
+	var config = {
+		port: 80,
+		host: 'search.twitter.com'
+	};
 	HttpApiClient.call(this, config);
 	/**
 	 * Used to compose the filters query string
