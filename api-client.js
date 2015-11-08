@@ -21,6 +21,7 @@ var ApiClient = function(config) {
 
 ApiClient.prototype = {
   /**
+   * @param {String} method
    * @param {Object} params
    * @param {Function} callback
    */

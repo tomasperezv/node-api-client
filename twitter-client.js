@@ -9,7 +9,12 @@
  * Public Domain.
  * No warranty expressed or implied. Use at your own risk.
  */
-var TwitterClient = function() {
+var TwitterClient = function(config) {
+  /**
+   * @type {Object} {_config}
+   * @private
+   */
+  this._config = config;
 };
 
 /**
