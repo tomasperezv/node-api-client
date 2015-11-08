@@ -4,42 +4,44 @@
  * @author tom@0x101.com
  * @class TwitterStreamClient
  * @see https://dev.twitter.com/docs/streaming-apis/streams/public
- * @see https://github.com/AvianFlu/ntwitter
+ * @see https://www.npmjs.com/package/twitter
  *
  * Base interface for communicating with the Twitter Stream API, adapter for the
- * ntwitter client https://github.com/AvianFlu/ntwitter
+ * node.js twitter client https://github.com/desmondmorris/node-twitter
  *
  * Public Domain.
  * No warranty expressed or implied. Use at your own risk.
  */
-var ApiClient = require('./api-client').ApiClient,
-  TwitterClient = require('./twitter-client').TwitterClient,
-  ntwitter = require('ntwitter');
-
-var TwitterStreamClient = function(config) {
-  this.nTwitter = null;
-  this.TYPE_AND = ' ';
-  this.TYPE_OR = ',';
-  ApiClient.call(this, config);
-};
-
-TwitterStreamClient.prototype = new ApiClient();
-TwitterStreamClient.prototype._formatFilters = TwitterClient.prototype._formatFilters;
+var TwitterClient = require('./twitter-client').TwitterClient;
 
 /**
- * Returns and Initialize if needed the ntwitter object.
- * @return {Object} nTwitter
+ * @param {Object} config
+ * @constructor
  */
-TwitterStreamClient.prototype._getNTwitter = function() {
-  if (this.nTwitter === null) {
-    this.nTwitter = new ntwitter({
-      consumer_key: this.config['twitter-consumer-key'],
-      consumer_secret: this.config['twitter-consumer-secret'],
-      access_token_key: this.config['twitter-access-token'],
-      access_token_secret: this.config['twitter-access-token-secret']
+var TwitterStreamClient = function(config) {
+  this.nodeTwitter = null;
+  this.TYPE_AND = ' ';
+  this.TYPE_OR = ',';
+  TwitterClient.call(this, config);
+};
+
+TwitterStreamClient.prototype = new TwitterClient();
+
+/**
+ * Returns and Initialize if needed the nodeTwitter object.
+ * @return {Object} nodeTwitter
+ */
+TwitterStreamClient.prototype._getnodeTwitter = function() {
+  if (this.nodeTwitter === null) {
+    var Twitter = require('twitter');
+    this.nodeTwitter = new Twitter({
+      consumer_key: this._config['twitter-consumer-key'],
+      consumer_secret: this._config['twitter-consumer-secret'],
+      access_token_key: this._config['twitter-access-token'],
+      access_token_secret: this._config['twitter-access-token-secret']
     });
   }
-  return this.nTwitter;
+  return this.nodeTwitter;
 };
 
 /**
@@ -53,28 +55,35 @@ TwitterStreamClient.prototype.search = function(filters, callback) {
     locations: '-180,-90,180,90'
   };
 
-  var nTwitter = this._getNTwitter(),
+  var nodeTwitter = this._getnodeTwitter(),
     self = this;
 
-  nTwitter.stream('statuses/filter', params, function(stream) {
-    var output = [];
+  var maxTweets = self._config['twitter-max-tweets'];
 
-    stream.on('data', function (chunk) {
-      console.log(chunk.text);
-      output.push(chunk);
+  nodeTwitter.stream('statuses/filter', params, function(stream) {
+    var tweets = [];
+
+    stream.on('data', function (tweet) {
+      tweets.push(tweet.text);
+
+      if (tweets.length === maxTweets) {
+        callback(tweets);
+      }
     });
 
-    stream.on('destroy', function() {
-      console.log('Returning ' + output.length + ' results');
-      callback(JSON.stringify(output));
+    stream.on('end', function() {
+      if (tweets.length < maxTweets) {
+        callback(false, tweets);
+      }
     });
 
-    stream.on('error', function (response) {
-      console.log('Error on ', response);
+    stream.on('error', function(error) {
+      console.log(error);
+      callback(error, tweets);
     });
 
     // Disconnect stream after max time
-    setTimeout(stream.destroy, self.config['twitter-stream-time']);
+    setTimeout(stream.destroy, self._config['twitter-stream-time']);
   });
 
 };
