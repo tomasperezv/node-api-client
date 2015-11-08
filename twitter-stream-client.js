@@ -1,3 +1,5 @@
+/* jslint node: true */
+
 /**
  * @author tom@0x101.com
  * @class TwitterStreamClient
@@ -11,15 +13,15 @@
  * No warranty expressed or implied. Use at your own risk.
  */
 var ApiClient = require('./api-client').ApiClient,
-	TwitterClient = require('./twitter-client').TwitterClient,
-	ntwitter = require('ntwitter');
+  TwitterClient = require('./twitter-client').TwitterClient,
+  ntwitter = require('ntwitter');
 
 var TwitterStreamClient = function(config) {
-	this.nTwitter = null;
-	this.TYPE_AND = ' ';
-	this.TYPE_OR = ',';
-	ApiClient.call(this, config);
-}
+  this.nTwitter = null;
+  this.TYPE_AND = ' ';
+  this.TYPE_OR = ',';
+  ApiClient.call(this, config);
+};
 
 TwitterStreamClient.prototype = new ApiClient();
 TwitterStreamClient.prototype._formatFilters = TwitterClient.prototype._formatFilters;
@@ -29,15 +31,15 @@ TwitterStreamClient.prototype._formatFilters = TwitterClient.prototype._formatFi
  * @return {Object} nTwitter
  */
 TwitterStreamClient.prototype._getNTwitter = function() {
-	if (this.nTwitter === null) {
-		this.nTwitter = new ntwitter({
-			consumer_key: this.config['twitter-consumer-key'],
-			consumer_secret: this.config['twitter-consumer-secret'],
-			access_token_key: this.config['twitter-access-token'],
-			access_token_secret: this.config['twitter-access-token-secret']
-		});
-	}
-	return this.nTwitter;
+  if (this.nTwitter === null) {
+    this.nTwitter = new ntwitter({
+      consumer_key: this.config['twitter-consumer-key'],
+      consumer_secret: this.config['twitter-consumer-secret'],
+      access_token_key: this.config['twitter-access-token'],
+      access_token_secret: this.config['twitter-access-token-secret']
+    });
+  }
+  return this.nTwitter;
 };
 
 /**
@@ -46,33 +48,34 @@ TwitterStreamClient.prototype._getNTwitter = function() {
  * @param {Function} callback
  */
 TwitterStreamClient.prototype.search = function(filters, callback) {
-	var params = {
-		track: this._formatFilters(filters)
-		locations: '-180,-90,180,90'
-	};
-	console.log(params);
-	var nTwitter = this._getNTwitter(),
-		self = this;
+  var params = {
+    track: this._formatFilters(filters),
+    locations: '-180,-90,180,90'
+  };
 
-	nTwitter.stream('statuses/filter', params, function(stream) {
-		var output = [];
+  var nTwitter = this._getNTwitter(),
+    self = this;
 
-		stream.on('data', function (chunk) {
-			console.log(chunk.text);
-			output.push(chunk);
-		});
+  nTwitter.stream('statuses/filter', params, function(stream) {
+    var output = [];
 
-		stream.on('destroy', function (response) {
-			console.log('Returning ' + output.length + ' results');
-			callback(JSON.stringify(output));
-		});
+    stream.on('data', function (chunk) {
+      console.log(chunk.text);
+      output.push(chunk);
+    });
 
-		stream.on('error', function (response) {
-		});
+    stream.on('destroy', function() {
+      console.log('Returning ' + output.length + ' results');
+      callback(JSON.stringify(output));
+    });
 
-		// Disconnect stream after max time
-		setTimeout(stream.destroy, self.config['twitter-stream-time']);
-	});
+    stream.on('error', function (response) {
+      console.log('Error on ', response);
+    });
+
+    // Disconnect stream after max time
+    setTimeout(stream.destroy, self.config['twitter-stream-time']);
+  });
 
 };
 

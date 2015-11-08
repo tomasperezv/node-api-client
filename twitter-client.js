@@ -1,3 +1,5 @@
+/* jslint node: true */
+
 /**
  * @author tom@0x101.com
  * @class TwitterClient
@@ -15,12 +17,12 @@ var TwitterClient = function() {
  * @return {String} filters urlencoded
  */
 TwitterClient.prototype._formatFilters = function(params) {
-	var type = this.TYPE_AND;
-	if (typeof params.type_and === 'undefined' || !params.type_and) {
-		type = this.TYPE_OR;
-	}
-	var data = params.filters.split(' ');
-	return data.join(type);
+  var type = this.TYPE_AND;
+  if (typeof params.type_and === 'undefined' || !params.type_and) {
+    type = this.TYPE_OR;
+  }
+  var data = params.filters.split(' ');
+  return data.join(type);
 };
 
 // Expose the TwitterClient

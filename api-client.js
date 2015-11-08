@@ -1,3 +1,5 @@
+/* jslint node: true */
+
 /**
  * @author tom@0x101.com
  * @class ApiClient
@@ -14,18 +16,18 @@
  * config.port {Integer}
  */
 var ApiClient = function(config) {
-	this.config = config;
+  this.config = config;
 };
 
 ApiClient.prototype = {
-	/**
-	 * @param {Object} params
-	 * @param {Function} callback
-	 */
-	callMethod: function(method, params, callback) {
-		// Base method, nothing to do.
-		callback({});
-	},
+  /**
+   * @param {Object} params
+   * @param {Function} callback
+   */
+  callMethod: function(method, params, callback) {
+    // Base method, nothing to do.
+    callback({});
+  },
 };
 
 // Expose the ApiClient object
@@ -36,9 +38,9 @@ exports.ApiClient = ApiClient;
  * @var {Object} types
  */
 var Types = {
-	TWITTER_SEARCH: 'twitter_search',
-	TWITTER_STREAM: 'twitter_stream',
-	GOOGLE_PREDICTION: 'google_prediction'
+  TWITTER_SEARCH: 'twitter_search',
+  TWITTER_STREAM: 'twitter_stream',
+  GOOGLE_PREDICTION: 'google_prediction'
 };
 
 exports.Types = Types;
@@ -46,23 +48,23 @@ exports.Types = Types;
 /**
  * Simple factory that return an API client
  * e.g. To instantiate an Twitter search client:
- * 		var twitterSearchClient = ApiClientFactory.get(ApiClient.types.TWITTER_SEARCH);
+ *    var twitterSearchClient = ApiClientFactory.get(ApiClient.types.TWITTER_SEARCH);
  */
 var ApiClientFactory = {
-	get: function(type, config) {
-		var apiClient = null;
-		switch(type) {
-			case Types.TWITTER_SEARCH:
-				var TwitterSearchClient = require('./twitter-search-client').TwitterSearchClient;
-				apiClient = new TwitterSearchClient(config);
-				break;
-			case Types.TWITTER_STREAM:
-				var TwitterStreamClient = require('./twitter-stream-client').TwitterStreamClient;
-				apiClient = new TwitterStreamClient(config);
-				break;
-		}
-		return apiClient;
-	}
+  get: function(type, config) {
+    var apiClient = null;
+    switch(type) {
+      case Types.TWITTER_SEARCH:
+        var TwitterSearchClient = require('./twitter-search-client').TwitterSearchClient;
+        apiClient = new TwitterSearchClient(config);
+        break;
+      case Types.TWITTER_STREAM:
+        var TwitterStreamClient = require('./twitter-stream-client').TwitterStreamClient;
+        apiClient = new TwitterStreamClient(config);
+        break;
+    }
+    return apiClient;
+  }
 };
 
 // Expose the ApiClientFactory object
