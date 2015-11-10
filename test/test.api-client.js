@@ -14,3 +14,15 @@ describe('APIClient', function(){
   });
 
 });
+
+describe('APIClient.Types', function(){
+
+  it('API.Types are defined', function() {
+    var Types = require('../lib/api-client').Types;
+    expect(Types).to.be.an('object');
+    for (var type in Types) { // jshint ignore:line
+      expect(type).to.be.an('string');
+    }
+  });
+
+});
