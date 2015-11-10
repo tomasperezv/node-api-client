@@ -11,19 +11,23 @@ http://www.tomasperez.com
 Examples
 ----------
 
+```javascript
+	var ApiClient = require('node-api-client');
+
 	// API available types
-	ApiClient.Types.TWITTER_SEARCH
-	ApiClient.Types.TWITTER_STREAM
-	ApiClient.Types.GOOGLE_PREDICTION
+	ApiClient.Type.TWITTER_SEARCH
+	ApiClient.Type.TWITTER_STREAM
+	ApiClient.Type.GOOGLE_PREDICTION
 
 	// Example of request to the Twitter Search API
-	var twitterSearchClient = ApiClientFactory.get(ApiClient.types.TWITTER_SEARCH);
+	var twitterSearchClient = ApiClient.Factory.get(ApiClient.Type.TWITTER_SEARCH);
 	twitterSearchClient.search({maxTweets: 2, filters: 'test node'}, function(result) {
 		// Succesful request
 		console.log(result);
 	});
 
 	// Example of request to the Twitter Stream API
+	// Note: replace by the expected values from the Twitter apps auth console.
 	var config = {
 		"twitter-consumer-key" : "",
 		"twitter-consumer-secret": "",
@@ -32,10 +36,11 @@ Examples
 		"twitter-stream-time": 10000 // Time while the stream will be open
 	};
 
-	var twitterStreamClient = ApiClientFactory.get(ApiClientTypes.TWITTER_STREAM, config);
+	var twitterStreamClient = ApiClient.Factory.get(ApiClient.Type.TWITTER_STREAM, config);
 	twitterStreamClient.search({filters: 'test node'}, function(result) {
 		console.log(result.text);
 	});
+```
 
 License
 -----------
